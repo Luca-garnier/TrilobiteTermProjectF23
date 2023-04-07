@@ -170,15 +170,18 @@ def main():
     }
 
     #Plotting Example:
-    #Plot Euclidean Distance vector of specimen #0
-    plotVector(EUCLIDEAN_DISTANCE_ARRAY[0],0, comparisonStrategy.EUCLIDEAN_DISTANCE)
+    #Plot Euclidean Distance vector of specimen #i
+    for i in range(len(EUCLIDEAN_DISTANCE_ARRAY)):
+        plotVector(EUCLIDEAN_DISTANCE_ARRAY[i],i, comparisonStrategy.EUCLIDEAN_DISTANCE)
 
-    #Plot Cosine Similarity vector of specimen #0
-    plotVector(COSINE_SIMILARITY_ARRAY[0],0, comparisonStrategy.COSINE_SIMILARITY)
 
-    #Plot Jaccard Similarity vector of specimen #0
-    plotVector(JACCARD_SIMILARITY_ARRAY[0],0, comparisonStrategy.JACCARD_SIMILARITY)
+    # #Plot Cosine Similarity vector of specimen #i
+    for i in range(len(EUCLIDEAN_DISTANCE_ARRAY)):
+        plotVector(COSINE_SIMILARITY_ARRAY[i],i, comparisonStrategy.COSINE_SIMILARITY)
 
+    # #Plot Jaccard Similarity vector of specimen #i
+    for i in range(len(EUCLIDEAN_DISTANCE_ARRAY)):
+        plotVector(JACCARD_SIMILARITY_ARRAY[i],i, comparisonStrategy.JACCARD_SIMILARITY)
 
     for key, value in ARRAY_MAP.items():
          print(f"COMPARISON TECHNIQUE: {key}\n {value}\n\n\n")
