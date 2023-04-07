@@ -1,7 +1,14 @@
 import numpy as np
+import matplotlib.pyplot as plt
 import math
+from enum import Enum
 
 #---------------------------------------------SCRIPT VARIABLES---------------------------------------------#
+class comparisonStrategy(Enum):
+    EUCLIDEAN_DISTANCE = 'Euclidean distance'
+    COSINE_SIMILARITY = 'Cosine similarity'
+    JACCARD_SIMILARITY = 'Jaccard similarity'
+
 EUCLIDEAN_DISTANCE_ARRAY = []
 COSINE_SIMILARITY_ARRAY = []
 JACCARD_SIMILARITY_ARRAY = []
@@ -36,7 +43,7 @@ def euclidean_distance(vector1, vector2):
     for i in range(len(vector1)):
         distance += (vector1[i] - vector2[i])**2
     distance = math.sqrt(distance)
-    return distance
+    return round(distance, 3)
 
 
 #Cosine similarity:
@@ -49,7 +56,7 @@ def cosine_similarity(vector1, vector2):
     norm1 = np.linalg.norm(vector1)
     norm2 = np.linalg.norm(vector2)
     similarity = dot_product / (norm1 * norm2)
-    return similarity
+    return round(similarity, 3)
 
 
 #Jaccard similarity:
@@ -61,7 +68,7 @@ def jaccard_similarity(vector1, vector2):
     intersection = sum(a & b for a, b in zip(vector1, vector2))
     union = sum(a | b for a, b in zip(vector1, vector2))
     similarity = intersection / union if union != 0 else 0
-    return similarity
+    return round(similarity, 3)
 
 
 #---------------------------------------------HELPER FUNCTIONS---------------------------------------------#
@@ -106,11 +113,52 @@ def jaccSimVector(referenceVector, matrix):
         jaccSimScores.append(jacSim)
     return jaccSimScores
 
-def main():
-    global EUCLIDEAN_DISTANCE_ARRAY
-    global COSINE_SIMILARITY_ARRAY
-    global JACCARD_SIMILARITY_ARRAY
 
+
+#---------------------------------------------PLOTTING FUNCTIONS---------------------------------------------#
+def defineXAxis(vectorIndex):
+    return [i for i in range(15) if i != vectorIndex]
+
+def plotVector(vector, vectorIndex, comparisonTechnique):
+    if not isinstance(comparisonTechnique, comparisonStrategy):
+        raise TypeError("comparisonTechnique parameter must be an instance of comparisonStrategy enum")
+
+    #Determine plot type
+    title,color  = None, None
+    if(comparisonTechnique == comparisonStrategy.EUCLIDEAN_DISTANCE):
+        title = f"{comparisonStrategy.EUCLIDEAN_DISTANCE.value}: Speciment #{vectorIndex} vs Rest"
+        color = "red"
+
+    elif(comparisonTechnique == comparisonStrategy.COSINE_SIMILARITY):
+        title = f"{comparisonStrategy.COSINE_SIMILARITY.value}: Speciment #{vectorIndex} vs Rest"
+        color = "green"
+
+    else:
+        title = f"{comparisonStrategy.JACCARD_SIMILARITY.value}: Speciment #{vectorIndex} vs Rest"
+        color = "blue"
+
+    #Plotting
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    xAxisValues = defineXAxis(vectorIndex)
+    yAxisValues = vector
+    plt.plot(xAxisValues, yAxisValues, 'x', markersize=5, color=f'{color}')
+
+    #Customized annotations
+    for i in range(len(xAxisValues)):
+        plt.annotate(f'({yAxisValues[i]})', (xAxisValues[i], yAxisValues[i]), fontsize=6)
+    ax.set_title(f"{title}")
+    ax.set_xlabel("Artifact #")
+    ax.set_ylabel(f"{comparisonTechnique.value}")
+    plt.tick_params(axis='x', colors=f'{color}')
+    plt.tick_params(axis='y', colors=f'{color}')
+    plt.xticks(range(15))
+    plt.show()
+
+    
+    
+
+def main():
     EUCLIDEAN_DISTANCE_ARRAY = resultingComparisonArray(euclideanDistanceVector)
     COSINE_SIMILARITY_ARRAY = resultingComparisonArray(cosSimVector)
     JACCARD_SIMILARITY_ARRAY = resultingComparisonArray(jaccSimVector)
@@ -121,13 +169,19 @@ def main():
     'JacSim': JACCARD_SIMILARITY_ARRAY
     }
 
+    #Plotting Example:
+    #Plot Euclidean Distance vector of specimen #0
+    plotVector(EUCLIDEAN_DISTANCE_ARRAY[0],0, comparisonStrategy.EUCLIDEAN_DISTANCE)
+
+    #Plot Cosine Similarity vector of specimen #0
+    plotVector(COSINE_SIMILARITY_ARRAY[0],0, comparisonStrategy.COSINE_SIMILARITY)
+
+    #Plot Jaccard Similarity vector of specimen #0
+    plotVector(JACCARD_SIMILARITY_ARRAY[0],0, comparisonStrategy.JACCARD_SIMILARITY)
+
+
     for key, value in ARRAY_MAP.items():
-        print(f"COMPARISON TECHNIQUE: {key}\n {value}\n\n\n")
-
-
-
-
-
+         print(f"COMPARISON TECHNIQUE: {key}\n {value}\n\n\n")
 
 if __name__ == "__main__":
     main()
